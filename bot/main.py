@@ -8,13 +8,11 @@ def main():
     env = Env()
     env.read_env()
 
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                        level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
     updater = Updater(token=env("TOKEN"), use_context=True)
     dispatcher = updater.dispatcher
     handlers.handlers(dispatcher)
-
     updater.start_polling()
 
 
