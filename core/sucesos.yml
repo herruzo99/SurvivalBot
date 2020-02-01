@@ -17,7 +17,7 @@
 3pers:
   muerte:
     - "{0}, {1} y {2} se han caido de un edificio"
-    - "{0} mata a {1} pero a la vez muere {2} de la pena"
+    - "{0} mata a {1} pero a la vez muere {2} de la pena, {0} explota"
   asesinato:
     individual:
       - "{0} mata a {1} y {2}"

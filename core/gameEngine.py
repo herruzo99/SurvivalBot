@@ -4,37 +4,30 @@ from numpy import random
 
 
 class GameEngine:
-    sucesos = yaml.load(open("sucesos.yml", "r"), Loader=yaml.FullLoader)
+    sucesos = yaml.load(open("core/sucesos.yml", "r"), Loader=yaml.FullLoader)
 
     def __init__(self, players):
         if not isinstance(players, list):
             raise TypeError("players must be a list")
         self.players = players
-
-    def game(self):
-        final = []
-        x = 1
-        while len(self.players) > 1:
-            final.append("Dia " + str(x))
-            final.extend(self.turn())
-            x += 1
-        return final
+        self.text = None
+        self.day = 1
 
     def turn(self):
+        self.text = []
+
         activos = self.players.copy()
-        results = []
         while len(activos) != 0:
-            pers = min(len(activos), random.randint(1, 4))
+            probability = [0.5, 0.3, 0.2]
+            pers = min(len(activos), random.choice(range(1, 4), p=probability))
             players = random.choice(activos, pers, replace=False)
             activos_new = [x for x in activos if x not in players]
             activos = activos_new
-            results.append(self.event(players))
+            self.text.append(self.event(players))
 
-        if len(self.players) == 1:
-            results.append(str(self.players[0]) + " ha ganado.")
-        elif len(self.players) == 0:
-            results.append("nadie ha ganado, todos han muerto.")
-        return results
+        if len(self.players) <= 1:
+            return False
+        return True
 
     def event(self, players):
         total_players = len(players)
@@ -79,3 +72,16 @@ class GameEngine:
             else:
                 phrase = str(random.choice(events["miscelania"]))
             return phrase.format(players[0], players[1], players[2])
+
+    def get_log(self):
+        if self.text is None:
+            raise ValueError("Turn 1 isn't initiated")
+        self.text.insert(0, "Día {}".format(self.day))
+        self.day += 1
+        return self.text
+
+    def get_end(self):
+        if len(self.players) == 1:
+            return str(self.players[0]) + " ha ganado."
+        if len(self.players) == 0:
+            return "Nadie ha ganado, todos han muerto."
