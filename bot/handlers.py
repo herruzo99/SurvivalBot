@@ -1,28 +1,33 @@
-from telegram.ext import CommandHandler
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackContext, Dispatcher
 from telegram.ext.dispatcher import run_async
-from threading import Thread
 from core.gameEngine import GameEngine
+import logging
 
 
-def handlers(dispatcher):
+def handlers(dispatcher: Dispatcher):
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
 
-    start_handler = CommandHandler('game', game)
-    dispatcher.add_handler(start_handler)
+    game_handler = CommandHandler('game', game)
+    dispatcher.add_handler(game_handler)
 
-    start_handler = CommandHandler('turn', turn)
-    dispatcher.add_handler(start_handler)
+    turn_handler = CommandHandler('turn', turn)
+    dispatcher.add_handler(turn_handler)
+
+    dispatcher.add_error_handler(error_callback)
+
 
 @run_async
-def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Bienvenido a SurvivalBot")
+def start(update: Update, context: CallbackContext):  # for start url base64.urlsafe_b64encode
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Bienvenido al bot de survival")
 
 
 game_alive = {}
 
+
 @run_async
-def game(update, context):
+def game(update: Update, context: CallbackContext):
     group_id = update.effective_chat.id
     if group_id in game_alive:
         context.bot.send_message(chat_id=group_id, text="Partida ya empezada")
@@ -32,8 +37,9 @@ def game(update, context):
         context.bot.send_message(chat_id=group_id, text="Empieza la partida")
         turn(update, context)
 
+
 @run_async
-def turn(update, context):
+def turn(update: Update, context: CallbackContext):
     group_id = update.effective_chat.id
     if group_id not in game_alive:
         context.bot.send_message(chat_id=group_id, text="Partida no empezada")
@@ -50,3 +56,8 @@ def turn(update, context):
             context.bot.send_message(chat_id=group_id, text=game_group.get_end())
             context.bot.send_message(chat_id=update.effective_chat.id, text="Fin de la partida")
             del game_alive[group_id]
+
+
+def error_callback(update, context):
+    logger = logging.getLogger()
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
