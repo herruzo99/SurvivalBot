@@ -8,7 +8,7 @@ import bot.handlers as handlers
 
 import telegram.bot
 from telegram.ext import messagequeue as mq
-from telegram.ext.dictpersistence import DictPersistence
+from bot import persistent as per
 
 
 class MQBot(telegram.bot.Bot):
@@ -24,31 +24,14 @@ class MQBot(telegram.bot.Bot):
     def __del__(self):
         try:
             self._msg_queue.stop()
-        except:
+        except Exception:
             pass
 
     @mq.queuedmessage
     def send_message(self, *args, **kwargs):
-        '''Wrapped method would accept new `queued` and `isgroup`
-        OPTIONAL arguments'''
+        """Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments"""
         return super(MQBot, self).send_message(*args, **kwargs)
-
-
-def data_store(context):
-    persistent = context.job.context
-    user_data = persistent.user_data_json
-    f = open("data/user_data.json", "w+")
-    f.write(user_data)
-    f.close()
-
-
-def create_persistent():
-    try:
-        f = open("data/user_data.json", "r")
-        user_content = f.read()
-    except FileNotFoundError:
-        user_content = ""
-    return DictPersistence(user_data_json=user_content)
 
 
 def main():
@@ -64,7 +47,7 @@ def main():
     bot = MQBot(env("TOKEN"), request=request, mqueue=queue)
     """Hasta quí la implementación actual del límite de envio"""
 
-    persistent = create_persistent()
+    persistent = per.create_persistent()
 
     updater = Updater(bot=bot, persistence=persistent, use_context=True)
     dispatcher = updater.dispatcher
@@ -72,7 +55,7 @@ def main():
     updater.start_polling()
 
     jq = updater.job_queue
-    jq.run_repeating(data_store, interval=10, context=persistent)
+    jq.run_repeating(per.data_store, interval=10, context=persistent)
 
 
 if __name__ == "__main__":

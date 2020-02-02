@@ -4,6 +4,8 @@ from telegram.ext.dispatcher import run_async
 from core.gameEngine import GameEngine
 import logging
 
+from core.player import Player
+
 
 def handlers(dispatcher: Dispatcher):
     start_handler = CommandHandler('start', start)
@@ -33,7 +35,13 @@ def game(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=group_id, text="Partida ya empezada")
 
     else:
-        game_alive[group_id] = GameEngine([1, 2, 3, 4, 5])
+        if len(context.args) > 0:
+            players = []
+            for person in context.args:
+                players.append(Player(person))
+        else:
+            players = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        game_alive[group_id] = GameEngine(players)
         context.bot.send_message(chat_id=group_id, text="Empieza la partida")
         turn(update, context)
 
