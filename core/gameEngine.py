@@ -3,6 +3,10 @@ from core.player import Player
 from numpy import random
 
 
+def format_str(frase: str, players):
+    return "- " + frase.format(*players)
+
+
 class GameEngine:
     sucesos = yaml.load(open("core/sucesos.yml", "r"), Loader=yaml.FullLoader)
 
@@ -19,12 +23,14 @@ class GameEngine:
         activos = self.players.copy()
         while len(activos) != 0:
             probability = [0.5, 0.3, 0.2]
-            pers = min(len(activos), random.choice(range(1, 4), p=probability))
+            possible_num = [1, 2, 3]
+            pers = min(len(activos), random.choice(possible_num, p=probability))
             players = random.choice(activos, pers, replace=False)
             activos_new = [x for x in activos if x not in players]
             activos = activos_new
             self.text.append(self.event(players))
 
+        self.text.sort()
         if len(self.players) <= 1:
             return False
         return True
@@ -41,7 +47,7 @@ class GameEngine:
             else:
                 phrase = str(random.choice(events["miscelania"]))
 
-            return phrase.format(players[0])
+            return format_str(phrase, players)
 
         elif total_players == 2:
             if secret_num < 20:
@@ -53,7 +59,7 @@ class GameEngine:
                 self.players.remove(players[1])
             else:
                 phrase = str(random.choice(events["miscelania"]))
-            return phrase.format(players[0], players[1])
+            return format_str(phrase, players)
 
         else:
             if secret_num < 20:
@@ -71,7 +77,7 @@ class GameEngine:
                     self.players.remove(players[2])
             else:
                 phrase = str(random.choice(events["miscelania"]))
-            return phrase.format(players[0], players[1], players[2])
+            return format_str(phrase, players)
 
     def get_log(self):
         if self.text is None:

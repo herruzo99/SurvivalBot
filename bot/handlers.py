@@ -1,5 +1,5 @@
-from telegram import Update
-from telegram.ext import CommandHandler, CallbackContext, Dispatcher
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import CommandHandler, CallbackContext, Dispatcher, CallbackQueryHandler
 from telegram.ext.dispatcher import run_async
 from core.gameEngine import GameEngine
 import logging
@@ -16,6 +16,9 @@ def handlers(dispatcher: Dispatcher):
 
     turn_handler = CommandHandler('turn', turn)
     dispatcher.add_handler(turn_handler)
+
+    turn_callback = CallbackQueryHandler(turn, pattern="next")
+    dispatcher.add_handler(turn_callback)
 
     dispatcher.add_error_handler(error_callback)
 
@@ -54,13 +57,25 @@ def turn(update: Update, context: CallbackContext):
 
     else:
         game_group = game_alive[group_id]
-        status = game_group.turn()
+        playing = game_group.turn()
         text = ""
         for t in game_group.get_log():
             text += "\n" + t
-        context.bot.send_message(chat_id=group_id, text=text)
 
-        if not status:
+        if update.callback_query:
+            message = update.callback_query.message
+            chat_id = message.chat.id
+            message_id = message.message_id
+            context.bot.editMessageReplyMarkup(chat_id, message_id)
+
+        if playing:
+            butom = InlineKeyboardMarkup([[InlineKeyboardButton("next", callback_data="next")]])
+        else:
+            butom = ""
+
+        context.bot.send_message(chat_id=group_id, text=text, reply_markup=butom)
+
+        if not playing:
             context.bot.send_message(chat_id=group_id, text=game_group.get_end())
             context.bot.send_message(chat_id=update.effective_chat.id, text="Fin de la partida")
             del game_alive[group_id]
