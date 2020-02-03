@@ -7,6 +7,9 @@ verify_ssl = true
 
 [packages]
 python-telegram-bot = "*"
+environs = "*"
+pyyaml = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.7"

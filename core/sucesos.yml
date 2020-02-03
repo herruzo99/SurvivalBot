@@ -1,0 +1,29 @@
+---
+1pers:
+  muerte:
+    - "{0} se ha caido"
+    - "{0} ha tenido un accidente"
+  miscelania:
+    - "{0} ha cogido un arma"
+2pers:
+  muerte:
+    - "{0} y {1} han explotado"
+    - "{0} mata a {1} pero a la vez muere"
+  asesinato:
+    - "{0} mata a {1}"
+    - "{0} tira a {1} por un acantilado"
+  miscelania:
+    - "{0} y {1} se miran"
+3pers:
+  muerte:
+    - "{0}, {1} y {2} se han caido de un edificio"
+    - "{0} mata a {1} pero a la vez muere {2} de la pena, {0} explota"
+  asesinato:
+    individual:
+      - "{0} mata a {1} y {2}"
+      - "{0} tira a {1} y {2} por un acantilado"
+    doble:
+      - "{0} con ayuda de {1} mata a {2}"
+  miscelania:
+    - "{0} y {1} se miran, {2} les ve mirarse"
+...
