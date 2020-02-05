@@ -8,7 +8,7 @@ import bot.handlers as handlers
 
 import telegram.bot
 from telegram.ext import messagequeue as mq
-from core.storage import store, get_storage
+from bot.storage import store, get_storage
 
 
 class MQBot(telegram.bot.Bot):

@@ -11,16 +11,19 @@ def format_str(frase: str, players: List[Player]):
 class GameEngine:
     sucesos = yaml.load(open("core/sucesos.yml", "r"), Loader=yaml.FullLoader)
 
-    def __init__(self, players: List[Player]):
+    def __init__(self, players: List[Player] = []):
         if not isinstance(players, list):
             raise TypeError("players must be a list")
         self.players = players
         self.text = None
         self.day = 1
 
+    def add_player(self, player: Player):
+        if player not in self.players and self.text is None:
+            self.players.append(player)
+
     def turn(self):
         self.text = []
-
         activos = self.players.copy()
         while len(activos) != 0:
             probability = [0.5, 0.3, 0.2]
