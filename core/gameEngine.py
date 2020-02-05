@@ -1,16 +1,17 @@
 import yaml
 from core.player import Player
 from numpy import random
+from typing import List
 
 
-def format_str(frase: str, players):
+def format_str(frase: str, players: List[Player]):
     return "- " + frase.format(*players)
 
 
 class GameEngine:
     sucesos = yaml.load(open("core/sucesos.yml", "r"), Loader=yaml.FullLoader)
 
-    def __init__(self, players):
+    def __init__(self, players: List[Player]):
         if not isinstance(players, list):
             raise TypeError("players must be a list")
         self.players = players
