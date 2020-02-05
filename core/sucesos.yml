@@ -1,7 +1,7 @@
 ---
 1pers:
   muerte:
-    - "{0} se ha caido"
+    - "{0} se ha caido de una montaña"
     - "{0} ha tenido un accidente"
   miscelania:
     - "{0} ha cogido un arma"
@@ -17,7 +17,7 @@
 3pers:
   muerte:
     - "{0}, {1} y {2} se han caido de un edificio"
-    - "{0} mata a {1} pero a la vez muere {2} de la pena, {0} explota"
+    - "{0} mata a {1} aunque {0} muere en el intento, a la vez muere {2} de la pena"
   asesinato:
     individual:
       - "{0} mata a {1} y {2}"
