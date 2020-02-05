@@ -8,7 +8,7 @@ import bot.handlers as handlers
 
 import telegram.bot
 from telegram.ext import messagequeue as mq
-from bot import persistent as per
+from core.storage import store, get_storage
 
 
 class MQBot(telegram.bot.Bot):
@@ -47,7 +47,7 @@ def main():
     bot = MQBot(env("TOKEN"), request=request, mqueue=queue)
     """Hasta quí la implementación actual del límite de envio"""
 
-    persistent = per.create_persistent()
+    persistent = get_storage()
 
     updater = Updater(bot=bot, persistence=persistent, use_context=True)
     dispatcher = updater.dispatcher
@@ -55,7 +55,7 @@ def main():
     updater.start_polling()
 
     jq = updater.job_queue
-    jq.run_repeating(per.data_store, interval=10, context=persistent)
+    jq.run_repeating(store, interval=3, context=persistent)
 
 
 if __name__ == "__main__":

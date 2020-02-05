@@ -17,6 +17,11 @@ def handlers(dispatcher: Dispatcher):
     turn_handler = CommandHandler('turn', turn)
     dispatcher.add_handler(turn_handler)
 
+    create_player_handler = CommandHandler('create_player', create_player)
+    dispatcher.add_handler(create_player_handler)
+    show_player_handler = CommandHandler('show_player', show_player)
+    dispatcher.add_handler(show_player_handler)
+
     turn_callback = CallbackQueryHandler(turn, pattern="next")
     dispatcher.add_handler(turn_callback)
 
@@ -43,7 +48,8 @@ def game(update: Update, context: CallbackContext):
             for person in context.args:
                 players.append(Player(person))
         else:
-            players = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            players = [Player(1), Player(2), Player(3), Player(4), Player(5), Player(6), Player(7), Player(8),
+                       Player(9), Player(10)]
         game_alive[group_id] = GameEngine(players)
         context.bot.send_message(chat_id=group_id, text="Empieza la partida")
         turn(update, context)
@@ -81,6 +87,31 @@ def turn(update: Update, context: CallbackContext):
             del game_alive[group_id]
 
 
-def error_callback(update, context):
+def show_player(update: Update, context: CallbackContext):
+    group_id = update.effective_chat.id
+    if update.effective_chat.type != "private":
+        context.bot.send_message(chat_id=group_id, text="Solo se puede usar en chat privado")
+
+    if "player" not in context.user_data:
+        context.bot.send_message(chat_id=group_id, text="No tienes un jugador creado")
+    else:
+        pass
+        context.bot.send_message(chat_id=group_id, text="Jugador: " + context.user_data["player"].name)
+
+
+def create_player(update: Update, context: CallbackContext):
+    group_id = update.effective_chat.id
+
+    if update.effective_chat.type != "private":
+        context.bot.send_message(chat_id=group_id, text="Solo se puede usar en chat privado")
+
+    if "player" in context.user_data:
+        context.bot.send_message(chat_id=group_id, text="Ya tienes un jugador creado")
+    else:
+        context.user_data["player"] = Player("juan")
+        context.bot.send_message(chat_id=group_id, text="Jugador creado")
+
+
+def error_callback(update: Update, context: CallbackContext):
     logger = logging.getLogger()
     logger.warning('Update "%s" caused error "%s"', update, context.error)
